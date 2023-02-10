@@ -1,7 +1,6 @@
 import imageio_ffmpeg
 import os
 import numpy as np
-import torch
 
 
 class InferVideo:

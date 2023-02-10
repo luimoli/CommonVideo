@@ -19,9 +19,9 @@ def get_folder_Iterator(rootDir, item_list, dir_list, abspath_list):
         if os.path.isdir(path): 
             get_folder_Iterator(path,item_list, dir_list, abspath_list)
         else:
-            print(path)
-            print(rootDir)
-            print(file_name)
+            # print(path)
+            # print(rootDir)
+            # print(file_name)
             item_list.append(file_name)
             dir_list.append(rootDir)
             abspath_list.append(path)
@@ -38,3 +38,8 @@ def get_folder_Iterator(rootDir, item_list, dir_list, abspath_list):
 if __name__=='__main__':
     video_root = '/home/user/liumengmeng/VideoAlgoToolChain/denoise_Test'
     save_root = '/home/user/liumengmeng/VideoAlgoToolChain/denoise_Test_PNG'
+
+    item_list, dir_list, abspath_list = [], [], []
+    rootDir = r"D:\Data\Videos\动漫_gt"
+    item_list,dir_list, abspath_list = get_folder_Iterator(rootDir, item_list, dir_list, abspath_list)
+    print(abspath_list)

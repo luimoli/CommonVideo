@@ -1,12 +1,13 @@
-from glob import glob
 import os
-from pickle import TRUE
 import random
-from tqdm import tqdm
 import math
 import json
 import subprocess
+from tqdm import tqdm
+from glob import glob
 
+
+from get_all_file_path import get_folder_Iterator
 
 def get_video_duration(file_path):
     """_summary_
@@ -25,17 +26,17 @@ def get_video_duration(file_path):
     return time_list 
 
 
-def generate_random_n_same_seq(range_a, range_b, res_seq_num, auto_num_cal=False):
+def generate_random_n_same_seq(range_a, range_b, res_seq_num, auto_num_cal=0):
     """
     [rangea, rangeb]
     Args:
         range_a (int): (in time sequence it is) 0
         range_b (int): limit_m
         seq_num (_type_): _description_
-        auto_num_cal: get 80% of [range_a, range_b], in which total num al
+        auto_num_cal(float): get 'auto_num_cal' times of length of [range_a, range_b].
     """
     if auto_num_cal:
-        seq_num = int(len(range(range_a, range_b+1)) * 0.8)
+        seq_num = int(len(range(range_a, range_b+1)) * auto_num_cal)
     else:  
         seq_num = res_seq_num
 
@@ -61,6 +62,69 @@ def generate_random_n_same_seq(range_a, range_b, res_seq_num, auto_num_cal=False
 
     return res_list
 
+
+def random_cut_frame(rootDir, saveDir, clip_frame_number, clip_number, clip_ratio, before_remove, after_remove, label_save_path):
+    """get clips for specified number of frame imgs
+    --<saveDir>
+      --001  (-> created label of original source and timestap)
+        --0001.png
+        --0002.png
+
+    Args:
+        rootDir (str): _description_
+        saveDir (str): _description_
+        clip_frame_number (int): number of frame imgs in a clip
+        clip_number (int): how many clips in a video
+        before_remove (int): minutes; remove the opening of video
+        after_remove (int): minutes; remove the ending of video
+        label_save_path (str): _description_
+
+    Raises:
+        ValueError: _description_
+    """
+    item_list, dir_list, abspath_list = [], [], []
+    _,_, abspath_list = get_folder_Iterator(rootDir, item_list, dir_list, abspath_list)
+    if not os.path.exists(saveDir):os.makedirs(saveDir)
+
+    clip_num = 0
+    label_dic = {} # save the label
+
+
+    for video_path in tqdm(abspath_list):
+        limit_t, limit_m, limit_s = get_video_duration(video_path)
+        
+        if limit_m > 0:
+            total_m = limit_t*60 + limit_m
+            assert total_m - before_remove - after_remove > 0
+            range_a = before_remove
+            range_b = total_m - after_remove
+            m_seq = generate_random_n_same_seq(range_a, range_b, clip_number, clip_ratio)
+            if limit_t:
+                t_seq =[(i // 60) for i in m_seq ]
+                tmp_seq = [(i * 60) for i in t_seq ]
+                m_seq = [m_seq[i] - tmp_seq[i] for i in range(len(m_seq))]
+                # m_seq = m_seq - t_seq * 60
+            else:
+                t_seq = [0 for i in range(len(m_seq))]
+        else:
+            raise ValueError(f'{video_path} is a very short video!' )
+        
+        for i in range(len(m_seq)):
+            hour = t_seq[i]
+            minute = m_seq[i]
+            second = random.randint(0,59)
+            h, m, s = str(hour).zfill(2), str(minute).zfill(2), str(second).zfill(2)
+            save_file_name = str(clip_num).zfill(3)
+            save_path = os.path.join(saveDir, save_file_name)
+            if not os.path.exists(save_path):os.makedirs(save_path)
+            bash_command = f'ffmpeg -ss {h}:{m}:{s} -i "{video_path}" -frames:v {clip_frame_number} -q:v 2 "{save_path}\%5d.png"'
+            os.system(bash_command)
+
+            label_dic[save_file_name] = {"original_filesource":video_path, "start_timestamp":f'{h}:{m}:{s}'}
+            clip_num += 1
+    
+    with open(label_save_path,"w",encoding="utf-8") as f:
+        json.dump(label_dic, f)
 
 
 def random_cut(cut_number, cut_duration, save_path, file_root1, file_root2, label_save_path, auto_number):
@@ -177,16 +241,21 @@ def mkv_to_mp4(file_root, save_root):
 
 
 if __name__ == '__main__':
+    rootDir = r"D:\Data\Videos\Anime_MOVIE_gt"
+    saveDir = r"D:\Data\AnimeDataset"
+    label_save_path = r"D:\Data\AnimeDataset_Label\clip_label_MOVIE.json"
+    random_cut_frame(rootDir, saveDir, clip_frame_number=100, clip_number=20, clip_ratio=1, before_remove=1, after_remove=5, label_save_path=label_save_path)
+
+
     # file_path = r"\\192.168.100.201\Media-Dev\Video_Depo\动漫\Hataraku Saibou\[Kamigami][Hataraku Saibou][01][720P][CHS].mp4"
 
-   
-    save_path = r"\\192.168.100.201\Media-Dev\Video_Depo\动漫\Anime_Dataset\1080p"
-    file_root1 = r'\\192.168.100.201\Media-Dev\Video_Depo\动漫\Fate stay night UBW mp4'
-    file_root2 = r"\\192.168.100.201\Media-Dev\Video_Depo\动漫\saoali"
-    cut_number = 20
-    cut_duration = 4
-    label_save_path = r"\\192.168.100.201\Media-Dev\Video_Depo\动漫\Anime_Dataset\label_1080p.json"
-    auto_number = True
+    # save_path = r"\\192.168.100.201\Media-Dev\Video_Depo\动漫\Anime_Dataset\1080p"
+    # file_root1 = r'\\192.168.100.201\Media-Dev\Video_Depo\动漫\Fate stay night UBW mp4'
+    # file_root2 = r"\\192.168.100.201\Media-Dev\Video_Depo\动漫\saoali"
+    # cut_number = 20
+    # cut_duration = 4
+    # label_save_path = r"\\192.168.100.201\Media-Dev\Video_Depo\动漫\Anime_Dataset\label_1080p.json"
+    # auto_number = True
     # random_cut(cut_number, cut_duration, save_path, file_root1, file_root2, label_save_path, auto_number)
 
     # with open(label_save_path, 'r') as f:

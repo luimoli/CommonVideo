@@ -1,11 +1,5 @@
-import glob
-import cv2
 import os
-import imageio_ffmpeg
 import random
-from tqdm import tqdm
-
-
 
 
 def dump_video_frame_folder_ffmpeg(video_root, save_root, decode_type='709', platform ='win'):
@@ -70,11 +64,11 @@ def merges_frame_video_ffmpeg(img_root, save_root, framerate, start_number=0, en
 
     for img_folder in os.listdir(img_root):
         img_folder_path = os.path.join(img_root, img_folder)
-        if os.path.isdir(img_folder_path): 
+        if os.path.isdir(img_folder_path) and os.listdir(img_folder_path): # when this is a folder and not empty
             save_path = os.path.join(save_root, img_folder+'.mp4')
 
             if encode_type == '709':
-                bash_command =  f'ffmpeg -r {framerate} -start_number {start_number} -i {img_folder_path} -vcodec libx264 -vf "scale=in_color_matrix=bt709"  -v warning -crf 10 -color_range 1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 {save_path}'
+                bash_command =  f'ffmpeg -r {framerate} -start_number {start_number} -i {img_folder_path}/%4d.png -vcodec libx264 -vf "scale=in_color_matrix=bt709"  -v warning -crf 10 -color_range 1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 {save_path}'
             elif encode_type == '2020':
                 # bash_command = f'ffmpeg -r {framerate} -i {img_folder_path} -vcodec  libx264 -vf "scale=in_color_matrix=bt2020"  -v warning -crf 0 -color_range 1 -colorspace bt2020nc -color_primaries bt2020 -color_trc arib-std-b67  {save_path}'
                 bash_command = f'ffmpeg -r {framerate} -start_number {start_number} -i {img_folder_path} -vf "scale=in_color_matrix=bt2020:out_color_matrix=bt2020:in_range=limited:out_range=limited" -c:v libx264 -x264-params colorprim=bt2020:transfer=arib-std-b67:colormatrix=bt2020nc -crf 0 -pix_fmt yuv422p10le {save_path}'
@@ -82,7 +76,7 @@ def merges_frame_video_ffmpeg(img_root, save_root, framerate, start_number=0, en
                 print(f'!-------wrong encode_type---------!')
 
             os.system(bash_command)
-            print("Hello world")
+            # print("Hello world")
         else:
             print(f'"{img_folder_path}" is not the img_folder!')
 

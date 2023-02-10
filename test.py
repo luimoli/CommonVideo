@@ -1,7 +1,7 @@
 import imageio_ffmpeg
 import json
 import os
-from func_video import decode
+from decode_video import decode
 
 if __name__ == '__main__':
     # in_reader = imageio_ffmpeg.read_frames(r'C:\Users\liumm\Videos\aaavideo\160825_05_Sunflowers3_1080p.mp4')
