@@ -1,7 +1,9 @@
 import imageio_ffmpeg
 import json
 import os
-from decode_video import decode
+from video_decode import decode
+from utils.func import judge_number
+import shutil
 
 if __name__ == '__main__':
     # in_reader = imageio_ffmpeg.read_frames(r'C:\Users\liumm\Videos\aaavideo\160825_05_Sunflowers3_1080p.mp4')
@@ -15,5 +17,17 @@ if __name__ == '__main__':
 
     file_path = r'D:\Data\Videos\Macross\cut3.mov'
     save_folder = r'D:\Data\Videos\Macross\cut3'
-    decode(file_path, save_folder)
+    # decode(file_path, save_folder)
+
+
+    # path = r'/home/mengmengliu/datasets/Tests/0212/test_cmp'
+    # for folder in os.listdir(path):
+    #     if judge_number(folder, (0,3)):
+    #         folder_path = os.path.join(path, folder)
+    #         for img in os.listdir(folder_path):
+    #             if len(img[:-4]) == 4:
+    #                 img_path = os.path.join(folder_path, img)
+    #                 os.remove(img_path)
+                    
+
     

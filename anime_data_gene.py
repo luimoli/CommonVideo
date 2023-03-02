@@ -12,7 +12,7 @@ from get_all_file_path import get_folder_Iterator
 def get_video_duration(file_path):
     """_summary_
     Args:
-        file_path (str): _description_
+        file_path (str): video file path
     Returns:
         list(int): [time, minute, second]
     """
@@ -64,7 +64,7 @@ def generate_random_n_same_seq(range_a, range_b, res_seq_num, auto_num_cal=0):
 
 
 def random_cut_frame(rootDir, saveDir, clip_frame_number, clip_number, clip_ratio, before_remove, after_remove, label_save_path):
-    """get clips for specified number of frame imgs
+    """get clips which contain specified number of frame imgs
     --<saveDir>
       --001  (-> created label of original source and timestap)
         --0001.png
@@ -127,98 +127,98 @@ def random_cut_frame(rootDir, saveDir, clip_frame_number, clip_number, clip_rati
         json.dump(label_dic, f)
 
 
-def random_cut(cut_number, cut_duration, save_path, file_root1, file_root2, label_save_path, auto_number):
-    """randomly cut clips of videos and save in specified root and keep the label information.
-     TODO when time is not 0.(video is very long)
-    Args:
-        cut_number (int): _description_
-        cut_duration (int): unit(s) the duration of the cutted clip
-        save_path (str): save folder path
-        file_root1 (str): video folder 1
-        file_root2 (str): video folder 2
-        label_save_path (str): save the label of the generated dataset
-        auto_number (bool): if True, the calculate the <cut_number> according to video duration.(in func[generate_random_n_same_seq])
-    """
+# def random_cut(cut_number, cut_duration, save_path, file_root1, file_root2, label_save_path, auto_number):
+#     """randomly cut clips of videos and save in specified root and keep the label information.
+#      TODO when time is not 0.(video is very long)
+#     Args:
+#         cut_number (int): _description_
+#         cut_duration (int): unit(s) the duration of the cutted clip
+#         save_path (str): save folder path
+#         file_root1 (str): video folder 1
+#         file_root2 (str): video folder 2
+#         label_save_path (str): save the label of the generated dataset
+#         auto_number (bool): if True, the calculate the <cut_number> according to video duration.(in func[generate_random_n_same_seq])
+#     """
 
-    if not os.path.exists(save_path):os.makedirs(save_path)
+#     if not os.path.exists(save_path):os.makedirs(save_path)
     
-    file_paths1 = glob(f'{file_root1}\\*.mp4')
-    file_paths2 = glob(f'{file_root2}\\*.mp4')
-    file_list = []
-    file_list.extend(file_paths1)
-    file_list.extend(file_paths2)
-    print(file_list)
-    print(len(file_list))
+#     file_paths1 = glob(f'{file_root1}\\*.mp4')
+#     file_paths2 = glob(f'{file_root2}\\*.mp4')
+#     file_list = []
+#     file_list.extend(file_paths1)
+#     file_list.extend(file_paths2)
+#     print(file_list)
+#     print(len(file_list))
 
-    clip_num = 0
-    label_dic = {} # save the label
+#     clip_num = 0
+#     label_dic = {} # save the label
 
-    # for video_path in glob(f'{file_root}\\*.mp4'):
-    for video_path in file_paths1:
-        limit_t, limit_m, limit_s = get_video_duration(video_path)
+#     # for video_path in glob(f'{file_root}\\*.mp4'):
+#     for video_path in file_paths1:
+#         limit_t, limit_m, limit_s = get_video_duration(video_path)
 
-        m_seq = generate_random_n_same_seq(0, limit_m, cut_number, auto_num_cal=auto_number)
+#         m_seq = generate_random_n_same_seq(0, limit_m, cut_number, auto_num_cal=auto_number)
 
-        # for i in range(cut_number):
-        for i in range(len(m_seq)):
-            time = random.randint(0,limit_t)
-            minute = m_seq[i]
-            if minute == limit_m:
-                buffer_time = 2 # TODO
-                if (limit_s - buffer_time) < cut_duration:
-                    minute -= 1  # TODO maybe cut_duration is very large, here we presume that it is within 1 minute.
-                    second = 59 - (cut_duration - limit_s + buffer_time)
-                else:
-                    second = random.randint(0, limit_s - buffer_time - cut_duration) 
-            else:
-                second = random.randint(0,59) 
+#         # for i in range(cut_number):
+#         for i in range(len(m_seq)):
+#             time = random.randint(0,limit_t)
+#             minute = m_seq[i]
+#             if minute == limit_m:
+#                 buffer_time = 2 # TODO
+#                 if (limit_s - buffer_time) < cut_duration:
+#                     minute -= 1  # TODO maybe cut_duration is very large, here we presume that it is within 1 minute.
+#                     second = 59 - (cut_duration - limit_s + buffer_time)
+#                 else:
+#                     second = random.randint(0, limit_s - buffer_time - cut_duration) 
+#             else:
+#                 second = random.randint(0,59) 
 
-            t, m, s = str(time).zfill(2), str(minute).zfill(2), str(second).zfill(2)
-            cut_duration_str = str(cut_duration).zfill(2)
-            save_file_name = str(clip_num).zfill(3)
+#             t, m, s = str(time).zfill(2), str(minute).zfill(2), str(second).zfill(2)
+#             cut_duration_str = str(cut_duration).zfill(2)
+#             save_file_name = str(clip_num).zfill(3)
             
-            bash_command = f'ffmpeg -ss {t}:{m}:{s} -t 00:00:04 -i "{video_path}" -c:v copy -c:a copy -strict -2 "{save_path}\{save_file_name}.mp4"'
-            os.system(bash_command)
+#             bash_command = f'ffmpeg -ss {t}:{m}:{s} -t 00:00:04 -i "{video_path}" -c:v copy -c:a copy -strict -2 "{save_path}\{save_file_name}.mp4"'
+#             os.system(bash_command)
 
-            label_dic[save_file_name] = {"original_filesource":video_path, "start_timestamp":f'{t}:{m}:{s}'}
+#             label_dic[save_file_name] = {"original_filesource":video_path, "start_timestamp":f'{t}:{m}:{s}'}
             
-            clip_num += 1
+#             clip_num += 1
     
 
-    for video_path in file_paths2:
-        limit_t, limit_m, limit_s = get_video_duration(video_path)
+#     for video_path in file_paths2:
+#         limit_t, limit_m, limit_s = get_video_duration(video_path)
 
-        m_seq = generate_random_n_same_seq(0, limit_m, cut_number, auto_num_cal=auto_number)
+#         m_seq = generate_random_n_same_seq(0, limit_m, cut_number, auto_num_cal=auto_number)
 
-        # for i in range(cut_number):
-        for i in range(len(m_seq)):
-            time = random.randint(0,limit_t)
-            minute = m_seq[i]
-            if minute == limit_m:
-                buffer_time = 2 # TODO
-                if (limit_s - buffer_time) < cut_duration:
-                    minute -= 1  # TODO maybe cut_duration is very large, here we presume that it is within 1 minute.
-                    second = 59 - (cut_duration - limit_s + buffer_time)
-                else:
-                    second = random.randint(0, limit_s - buffer_time - cut_duration) 
-            else:
-                second = random.randint(0,59) 
+#         # for i in range(cut_number):
+#         for i in range(len(m_seq)):
+#             time = random.randint(0,limit_t)
+#             minute = m_seq[i]
+#             if minute == limit_m:
+#                 buffer_time = 2 # TODO
+#                 if (limit_s - buffer_time) < cut_duration:
+#                     minute -= 1  # TODO maybe cut_duration is very large, here we presume that it is within 1 minute.
+#                     second = 59 - (cut_duration - limit_s + buffer_time)
+#                 else:
+#                     second = random.randint(0, limit_s - buffer_time - cut_duration) 
+#             else:
+#                 second = random.randint(0,59) 
 
-            t, m, s = str(time).zfill(2), str(minute).zfill(2), str(second).zfill(2)
-            cut_duration_str = str(cut_duration).zfill(2)
-            save_file_name = str(clip_num).zfill(3)
+#             t, m, s = str(time).zfill(2), str(minute).zfill(2), str(second).zfill(2)
+#             cut_duration_str = str(cut_duration).zfill(2)
+#             save_file_name = str(clip_num).zfill(3)
             
-            bash_command = f'ffmpeg -ss {t}:{m}:{s} -t 00:00:04 -i "{video_path}" -c:v copy -c:a copy "{save_path}\{save_file_name}.mp4"'
-            os.system(bash_command)
+#             bash_command = f'ffmpeg -ss {t}:{m}:{s} -t 00:00:04 -i "{video_path}" -c:v copy -c:a copy "{save_path}\{save_file_name}.mp4"'
+#             os.system(bash_command)
 
-            label_dic[save_file_name] = {"original_filesource":video_path, "start_timestamp":f'{t}:{m}:{s}'}
+#             label_dic[save_file_name] = {"original_filesource":video_path, "start_timestamp":f'{t}:{m}:{s}'}
             
-            clip_num += 1
+#             clip_num += 1
 
 
-    with open(label_save_path,"w",encoding="utf-8") as f:
-        # f.write(json.dumps(label_dic))
-        json.dump(label_dic, f)
+#     with open(label_save_path,"w",encoding="utf-8") as f:
+#         # f.write(json.dumps(label_dic))
+#         json.dump(label_dic, f)
 
 
 
