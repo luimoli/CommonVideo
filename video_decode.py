@@ -8,7 +8,7 @@ def decode_video(file_path, save_folder):
     os.system(bash_command)
 
 def decode_videos_as_folder(file_root, save_root):
-    """_summary_
+    """all videos in file_root will be decoded.(the folders will be excluded.)
     Args:
         file_root (str): contain videos
         save_root (str): contrain folders with imgs.
@@ -21,11 +21,11 @@ def decode_videos_as_folder(file_root, save_root):
         if os.path.isfile(file_path):
             file_name = os.path.basename(file_path)[:-4]
 
-            if judge_number(file_name, (0,3)):  # TODO
-                print(file_path)
-                save_folder = os.path.join(save_root, file_name)
-                if not os.path.exists(save_folder): os.makedirs(save_folder)
-                decode_video(file_path, save_folder)
+            # if judge_number(file_name, (0,3)):  # TODO
+            #     print(file_path)
+            save_folder = os.path.join(save_root, file_name)
+            if not os.path.exists(save_folder): os.makedirs(save_folder)
+            decode_video(file_path, save_folder)
 
 def judge_number(file_path, number_range):
     name_list = [str(i) for i in range(number_range[0], number_range[1], 1)]
