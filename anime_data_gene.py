@@ -27,13 +27,14 @@ def get_video_duration(file_path):
 
 
 def generate_random_n_same_seq(range_a, range_b, res_seq_num, auto_num_cal=0):
-    """
-    [rangea, rangeb]
+    """[rangea, rangeb]
     Args:
         range_a (int): (in time sequence it is) 0
         range_b (int): limit_m
-        seq_num (_type_): _description_
-        auto_num_cal(float): get 'auto_num_cal' times of length of [range_a, range_b].
+        res_seq_num (_type_): specify length of this sequence.
+        auto_num_cal (int, optional): get 'auto_num_cal' times of length of [range_a, range_b].. Defaults to 0.
+    Returns:
+        _type_: _description_
     """
     if auto_num_cal:
         seq_num = int(len(range(range_a, range_b+1)) * auto_num_cal)
@@ -75,6 +76,7 @@ def random_cut_frame(rootDir, saveDir, clip_frame_number, clip_number, clip_rati
         saveDir (str): _description_
         clip_frame_number (int): number of frame imgs in a clip
         clip_number (int): how many clips in a video
+        clip_ratio (float): if this param is defined, this will be prior to "clip_number".
         before_remove (int): minutes; remove the opening of video
         after_remove (int): minutes; remove the ending of video
         label_save_path (str): _description_
