@@ -7,7 +7,7 @@ from tqdm import tqdm
 from glob import glob
 
 
-from get_all_file_path import get_folder_Iterator
+from utils.get_all_file_path import get_folder_Iterator
 
 def get_video_duration(file_path):
     """_summary_
