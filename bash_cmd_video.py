@@ -68,7 +68,8 @@ def merges_frame_video_ffmpeg(img_root, save_root, framerate, start_number=0, en
             save_path = os.path.join(save_root, img_folder+'.mp4')
             if not os.path.exists(save_path):
                 if encode_type == '709':
-                    bash_command =  f'ffmpeg -r {framerate} -start_number {start_number} -i {img_folder_path}/%5d.png -vcodec libx264 -vf "scale=in_color_matrix=bt709"  -v warning -crf 10 -color_range 1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 {save_path}'
+                    # bash_command =  f'ffmpeg -r {framerate} -start_number {start_number} -i {img_folder_path}/%5d.png -vcodec libx264 -vf "scale=in_color_matrix=bt709"  -v warning -crf 10 -color_range 1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 {save_path}'
+                    bash_command = f'ffmpeg -r {framerate} -start_number {start_number} -i {img_folder_path}/%5d.png -c:v libx264 -b:v 20000k -color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 -vf "scale=in_color_matrix=bt709:out_color_matrix=bt709:in_range=pc:out_range=tv" {save_path}'
                 elif encode_type == '2020':
                     # bash_command = f'ffmpeg -r {framerate} -i {img_folder_path} -vcodec  libx264 -vf "scale=in_color_matrix=bt2020"  -v warning -crf 0 -color_range 1 -colorspace bt2020nc -color_primaries bt2020 -color_trc arib-std-b67  {save_path}'
                     bash_command = f'ffmpeg -r {framerate} -start_number {start_number} -i {img_folder_path} -vf "scale=in_color_matrix=bt2020:out_color_matrix=bt2020:in_range=limited:out_range=limited" -c:v libx264 -x264-params colorprim=bt2020:transfer=arib-std-b67:colormatrix=bt2020nc -crf 0 -pix_fmt yuv422p10le {save_path}'
@@ -115,8 +116,8 @@ if __name__=='__main__':
     # save_root = f'C:\\Users\\liumm\\Videos\\SZ-video-sdr-v2\\'
     # merges_frame_video_ffmpeg(img_root=img_root, save_root=save_root, framerate=50, encode_type='709',platform ='win')
 
-    img_root = f'C:\\Users\\liumm\\Videos\\hgl\\'
-    save_root = f'C:\\Users\\liumm\\Videos\\hgl\\'
+    img_root = f''
+    save_root = f''
     merges_frame_video_ffmpeg(img_root=img_root, save_root=save_root, framerate=25, encode_type='2020',platform ='win')
 
     # cut_number = 6
