@@ -26,9 +26,9 @@ def cut_video(file_path, save_path, time_from, time_to=None, time_duration=None)
         print('select one from time_to and time_duraiton')
 
 if __name__ == '__main__':
-    file_path = r'\\192.168.100.201\MediaStore-share\媒体PoC\20221010-超时空要塞\01-原始数据\Macrossplus MOVIE_UPcom TEST-540.mov'
-    save_path = r'E:\home\mengmengliu\datasets\Tests\original_LQ_video\macross_1.mov'
-    time_from = '00:00:37'
-    time_to='00:00:45'
+    file_path = r"/home/mengmengliu/datasets/Tests/original_LQ_video/macross_edge_clips/macross_9.mov"
+    save_path = r"/home/mengmengliu/datasets/Tests/original_LQ_video/macross_edge_clips/macross_5.mov"
+    time_from = '00:00:00.258'
+    time_to='00:00:00.919'
     time_duration=None
     cut_video(file_path, save_path, time_from, time_to, time_duration)

@@ -10,7 +10,7 @@ def concat_videos(files_root, save_path):
     """
     all_paths = glob(f'{files_root}/*')
     all_paths = sorted(all_paths)
-
+    print(f'total {len(all_paths)} videos!')
     concat_file_list = []
     for path in all_paths:
         if os.path.isfile(path):
@@ -31,7 +31,7 @@ def concat_videos(files_root, save_path):
 if __name__ == '__main__':
 
 
-    file_root = '/home/mengmengliu/datasets/Tests/original_LQ_video'
+    file_root = '/home/mengmengliu/datasets/Tests/original_LQ_video/macross_edge_clips/'
     save_path = '/home/mengmengliu/datasets/Tests/original_LQ_video/macross.mov'
     concat_videos(file_root, save_path)
     # ffmpeg -f concat -safe 0 -i "mylist.txt" -c copy "/home/mengmengliu/datasets/Tests/original_LQ_video/macross.mov"
