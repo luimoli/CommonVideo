@@ -25,10 +25,29 @@ def cut_video(file_path, save_path, time_from, time_to=None, time_duration=None)
     else:
         print('select one from time_to and time_duraiton')
 
+def copy_video(file_path, save_path):
+    """from file_path to save_path's parent folder
+    Args:
+        file_path (_type_): _description_
+        save_path (_type_): _description_
+    """
+    save_pth = Path(save_path)
+    save_stem = save_pth.parent
+    # print(save_stem)
+    bash_command = f'cp -r {file_path} {save_stem}'
+    os.system(bash_command)
+    print(f'from {file_path} to {save_stem}: copy success!')
+
 if __name__ == '__main__':
-    file_path = r"/home/mengmengliu/datasets/Tests/original_LQ_video/macross_edge_clips/macross_9.mov"
-    save_path = r"/home/mengmengliu/datasets/Tests/original_LQ_video/macross_edge_clips/macross_5.mov"
-    time_from = '00:00:00.258'
-    time_to='00:00:00.919'
-    time_duration=None
+    file_path = r"/dataset2/oldfilm_smore/videos/016.mp4"
+    save_path = r"/dataset2/oldfilm_smore/clips/016_01.mp4"
+    time_from = '00:00:04'
+
+    # time_to='00:00:00.919'
+    time_to=None
+
+    time_duration='00:00:30'
+    # time_duration=None
+
     cut_video(file_path, save_path, time_from, time_to, time_duration)
+    # copy_video(file_path, save_path)
