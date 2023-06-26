@@ -1,6 +1,40 @@
 import os, sys
 import cv2
 from glob import glob
+from pathlib import Path
+
+def detect_folder_and_cut(clipimg_root, factor=4):
+    """
+    clipimg_root
+        --clip_1
+            --0001.png
+            --0002.png
+    Args:
+        clipimg_root (_type_): _description_
+        factor: frame resolution h and w should be multiple of factor
+    """
+    root = Path(clipimg_root)
+    folders = [f for f in root.iterdir() if f.is_dir()]
+    for folder in folders:
+        files = [f for f in folder.iterdir() if f.is_file()] # frames' path lists
+        assert len(files) > 0
+        first_img = cv2.imread(str(files[0]))
+        h, w, c = first_img.shape
+
+        if h % factor or w % factor: # h or w is not multiple of factor 
+            hnew = h - h % factor
+            wnew = w - w % factor
+            for img_path in files:
+                img = cv2.imread(str(img_path))
+                img_new = img[:,:,:].copy()
+                cv2.imwrite(img_path, img_new)
+        else:
+            print(folder, '  meets the requirement!')
+
+
+
+
+
 
 def cut_img_to_fit_size(folder_root):
     for folder in os.listdir(folder_root):
