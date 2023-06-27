@@ -66,15 +66,14 @@ if __name__ == '__main__':
     ]
     save_folder = Path(r"/dataset2/oldanime_smore/original_videos")
 
+    # # copy files in list to save_folder
     # for i in range(len(file_path_list)):
     for i in range(9, len(file_path_list)): #TODO
         file_path = file_path_list[i]
         file_path = Path(file_path)
         save_name = str(i+1).zfill(3)+file_path.suffix
 
-        bash_command = f'cp "{str(file_path)}" "{str(save_folder / save_name)}"'
+        bash_command = f'cp "{str(file_path)}" "{str(save_folder / save_name)}"' # to deal with blank
         os.system(bash_command)
         print(save_folder / save_name)
-        # print(file_path)
-        # print(save_folder / save_name)
 
