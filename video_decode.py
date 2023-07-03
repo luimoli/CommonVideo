@@ -4,8 +4,8 @@ import random
 
 def decode_video(file_path, save_folder, in_color_matrix='bt709'):
     if not os.path.exists(save_folder):os.makedirs(save_folder)
-    bash_command = f'ffmpeg -i "{file_path}" -filter_complex "scale=in_color_matrix={in_color_matrix}:in_range=limited" {save_folder}/%5d.png'
-    # bash_command = f'ffmpeg -i "{file_path}" {save_folder}/%5d.png'
+    # bash_command = f'ffmpeg -i "{file_path}" -filter_complex "scale=in_color_matrix={in_color_matrix}:in_range=limited" {save_folder}/%5d.png'
+    bash_command = f'ffmpeg -i "{file_path}" {save_folder}/%5d.png'
     os.system(bash_command)
 
 def decode_videos_as_folder(file_root, save_root):
@@ -40,6 +40,6 @@ if __name__ == '__main__':
     # save_folder = r'D:\Data\Videos\Macross\cut3'
     # decode(file_path, save_folder)
 
-    file_root = r"/dataset2/oldanime_smore/clips/709_709_709/"
-    save_root = r"/dataset2/oldanime_smore/images/709_709_709/"
+    file_root = r"/dataset2/oldanime_smore/clips/decross/"
+    save_root = r"/dataset2/oldanime_smore/images/decross/"
     decode_videos_as_folder(file_root, save_root)

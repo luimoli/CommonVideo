@@ -4,32 +4,22 @@ import numpy as np
 import cv2
 
 from bash_cmd_video import merges_frame_video_ffmpeg
-from utils.func import judge_number
 from pathlib import Path
 
 class CmpVideo():
-    def __init__(self, ori_root, out_all_root) -> None:
+    def __init__(self, ori_root, out_all_root, out_img_name, out_cmpimg_name) -> None:
         self.ori_root = Path(ori_root)
         self.out_all_root = out_all_root
-        self.out_root = os.path.join(os.path.dirname(self.out_all_root), 'frames')
-        self.merge_root = os.path.join(os.path.dirname(self.out_all_root), 'test_cmp')
+        self.out_root = os.path.join(os.path.dirname(self.out_all_root), out_img_name)
+        self.merge_root = os.path.join(os.path.dirname(self.out_all_root), out_cmpimg_name)
         # self.merge_video_root = os.path.join(os.path.dirname(self.merge_root), 'test_cmp_video')
         # self.out_video_root = os.path.join(os.path.dirname(self.out_root), 'test_HQ_video')
         self.makedir()
-        # self.generate_subfolder(self.ori_root, self.out_root, self.merge_root)
 
     def makedir(self):
         dir_list = [self.out_all_root, self.out_root, self.merge_root]
         for dir in dir_list:
             if not os.path.exists(dir): os.makedirs(dir)
-
-    # def generate_subfolder(self, ori_root, out_root, merge_root):
-    #     for folder_name in os.listdir(ori_root):
-    #         # ori_folder = os.path.join(ori_root, folder_name)
-    #         out_folder_out = os.path.join(out_root, folder_name)
-    #         out_folder_merge = os.path.join(merge_root, folder_name)
-    #         # if not os.path.exists(out_folder_out): os.makedirs(out_folder_out)
-    #         if not os.path.exists(out_folder_merge): os.makedirs(out_folder_merge)
 
     def get_last_subdirs(self, path): 
         """get the last level of subfolders.
@@ -48,6 +38,11 @@ class CmpVideo():
         return last_subdirs
 
     def generate_merge_pic(self, flag):
+        """self.ori_root is key: generate by folders in self.ori_root
+
+        Args:
+            flag (_type_): _description_
+        """
         folders = self.get_last_subdirs(self.ori_root)
         folders = sorted(folders, key=lambda s: s.name)
         for folder_path in folders:
@@ -62,16 +57,6 @@ class CmpVideo():
                 os.makedirs(merge_folder, exist_ok=True)
                 self.__merge_pic(str(cmp1_folder), cmp2_folder, merge_folder, flag)
 
-        # for folder_name in os.listdir(self.ori_root):
-        #     cmp1_folder = os.path.join(self.ori_root, folder_name)
-        #     cmp2_folder = os.path.join(self.out_root, folder_name)
-        #     merge_folder = os.path.join(self.merge_root, folder_name)
-
-        #     # if os.listdir(cmp2_folder) and judge_number(cmp2_folder, (0, 3)): #TODO
-        #     if os.listdir(cmp2_folder):
-        #         print(f'==={merge_folder}===')
-        #         self.__merge_pic(cmp1_folder, cmp2_folder, merge_folder, flag)
-
     def __merge_pic(self, cmp1_folder, cmp2_folder, merge_folder, flag):
         """_summary_
 
@@ -81,7 +66,6 @@ class CmpVideo():
             merge_folder (_type_): _description_
             flag (str): 'concat':
                         'half':
-
         Raises:
             ValueError: _description_
         """
@@ -93,14 +77,16 @@ class CmpVideo():
         for i in range(len(cmp1_path_list)):
             img1 = cv2.imread(cmp1_path_list[i])
             img2 = cv2.imread(cmp2_path_list[i])
-            img1_upscale = cv2.resize(img1, (img2.shape[1], img2.shape[0]), interpolation=cv2.INTER_CUBIC)
+            # img1_upscale = cv2.resize(img1, (img2.shape[1], img2.shape[0]), interpolation=cv2.INTER_CUBIC)
+            img1_upscale = cv2.resize(img1, (img2.shape[1], img2.shape[0]))
+
             assert img1_upscale.shape == img2.shape
             if flag == 'concat':
                 img_merge = np.concatenate((img1_upscale, img2), axis=1)
             elif flag == 'half':
                 h, w, c = img1_upscale.shape
-                img_left = img1_upscale[:, :w//2, :].copy()
-                img_right = img2[:, w//2: , :].copy()
+                img_left = img1_upscale[:, w//4:(w-w//4), :].copy()
+                img_right = img2[:, w//4:(w-w//4) , :].copy()
                 img_merge = np.concatenate((img_left, img_right), axis=1)
             else:
                 raise ValueError(flag)
@@ -130,12 +116,17 @@ if __name__ == '__main__':
     # cv2.imwrite('./test.jpg', res)
 
 
-    ori_root = "/dataset2/oldanime_smore/images" # test videos'(imgs') root
-    out_all_root = "/dataset2/oldanime_smore/results/step3_gan_3LBOs_datasetV1_net_g_150000/"
+    ori_root = "/dataset2/oldanime_smore/images_decross/tmp_part3" # test videos'(imgs') root
+    out_all_root = "/dataset2/oldanime_smore/results/step3_gan_3LBOs_datasetV1_net_g_40000/"
+    # out_all_root = "/dataset2/oldanime_smore/results/step3_gan_3LBOs_datasetV1_net_g_200000/"
+
     # out_root = "/home/mengmengliu/datasets/Tests/0212/test_HQ_img/" # test SR results(SR imgs 
     # merge_root = "/home/mengmengliu/datasets/Tests/0212/test_cmp/" #  test SR results (cmp imgs)
 
-    merge = CmpVideo(ori_root, out_all_root) ## generate_folders
+    out_img_name = 'frames'
+    out_cmpimg_name = 'cmp_images_decross'
+    print(out_all_root)
+    merge = CmpVideo(ori_root, out_all_root, out_img_name, out_cmpimg_name) ## generate_folders
     merge.generate_merge_pic(flag='half')
     # merge.encode_cmp_video()
     # merge.encode_HQ_video()

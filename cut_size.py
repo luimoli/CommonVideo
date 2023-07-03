@@ -40,7 +40,7 @@ def detect_folder_and_cutframes(clipimg_root, factor=8):
 
 if __name__ == '__main__':
     # folder_root = "/dataset2/oldanime_smore/images/smpte_170m"
-    folder_root = "/dataset2/oldanime_smore/images/709_709_709"
+    folder_root = "/dataset2/oldanime_smore/images/decross"
     
     detect_folder_and_cutframes(folder_root)
     
