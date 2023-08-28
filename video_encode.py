@@ -27,9 +27,9 @@ def video_encode(img_root, save_root, framerate, start_number=0, encode_type='70
     folders = [f for f in img_root.iterdir() if f.is_dir()]
     folders = sorted(folders)
     for folder in folders:
-        if '016' not in str(folder) and '017' not in str(folder): #TODO # exclude unwanted videos
-        # if True:
-            if any(folder.glob('*')):
+        # if '016' not in str(folder) and '017' not in str(folder): #TODO # exclude unwanted videos
+        if True:
+            if any(folder.glob('*')): # this folder is not empty
                 save_path = save_root / (folder.name + '.mp4')
                 if not save_path.exists(): # only encode those not encoded
                     if encode_type == '709':
@@ -69,7 +69,10 @@ def video_encode(img_root, save_root, framerate, start_number=0, encode_type='70
 
 
 if __name__ == '__main__':
-    frames_folder_root = Path("/dataset2/oldanime_smore/results/step3_gan_3LBOs_datasetV1_net_g_40000/cmp_images_old/")
-    save_video_root = frames_folder_root.parent / "cmp_videos_old_test"
-    # video_encode(frames_folder_root, save_video_root, 23.976)
-    video_encode(frames_folder_root, save_video_root, 29.97)
+    # frames_folder_root = Path("/home/mengmengliu/code/AnimeSR-dev/results/step1_gan_BasicOPonly_2_net_g_40000/frames")
+    # save_video_root = frames_folder_root.parent / "videos"
+    frames_folder_root = Path("/home/mengmengliu/code/AnimeSR-dev/results/step3_gan_3LBOs_datasetV1_net_g_20000/cmp_images")
+    save_video_root = frames_folder_root.parent / "cmp_videos"
+    # video_encode(frames_folder_root, save_video_root, 25)  
+    video_encode(frames_folder_root, save_video_root, 23.976)
+    # video_encode(frames_folder_root, save_video_root, 29.97)

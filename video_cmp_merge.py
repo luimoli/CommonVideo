@@ -37,11 +37,13 @@ class CmpVideo():
                 last_subdirs.append(subdir)
         return last_subdirs
 
-    def generate_merge_pic(self, flag):
+    def generate_merge_pic(self, flag, merge_num=0):
         """self.ori_root is key: generate by folders in self.ori_root
 
         Args:
-            flag (_type_): _description_
+            flag (str): 'concat':
+                        'half':
+            merge_num(int): if merge_num > 0: merge this num of frames. Default = 0.
         """
         folders = self.get_last_subdirs(self.ori_root)
         folders = sorted(folders, key=lambda s: s.name)
@@ -55,9 +57,9 @@ class CmpVideo():
                 # print(f'==={cmp2_folder}===')
                 print(f'==={merge_folder}===')
                 os.makedirs(merge_folder, exist_ok=True)
-                self.__merge_pic(str(cmp1_folder), cmp2_folder, merge_folder, flag)
+                self.__merge_pic(str(cmp1_folder), cmp2_folder, merge_folder, flag, merge_num)
 
-    def __merge_pic(self, cmp1_folder, cmp2_folder, merge_folder, flag):
+    def __merge_pic(self, cmp1_folder, cmp2_folder, merge_folder, flag, merge_num):
         """_summary_
 
         Args:
@@ -74,7 +76,11 @@ class CmpVideo():
         cmp1_path_list = sorted(cmp1_path_list)
         cmp2_path_list = sorted(cmp2_path_list)
         assert len(cmp1_path_list) == len(cmp2_path_list)
-        for i in range(len(cmp1_path_list)):
+        if merge_num:
+            loop_length = merge_num
+        else:
+            loop_length = len(cmp1_path_list)
+        for i in range(loop_length):
             img1 = cv2.imread(cmp1_path_list[i])
             img2 = cv2.imread(cmp2_path_list[i])
             # img1_upscale = cv2.resize(img1, (img2.shape[1], img2.shape[0]), interpolation=cv2.INTER_CUBIC)
@@ -116,18 +122,18 @@ if __name__ == '__main__':
     # cv2.imwrite('./test.jpg', res)
 
 
-    ori_root = "/dataset2/oldanime_smore/images_decross/tmp_part3" # test videos'(imgs') root
-    out_all_root = "/dataset2/oldanime_smore/results/step3_gan_3LBOs_datasetV1_net_g_40000/"
+    ori_root = "/home/mengmengliu/code/AnimeSR-dev/inputs" # test videos'(imgs') root
+    out_all_root = "/home/mengmengliu/code/AnimeSR-dev/results/step3_gan_3LBOs_datasetV1_net_g_20000/"
     # out_all_root = "/dataset2/oldanime_smore/results/step3_gan_3LBOs_datasetV1_net_g_200000/"
 
     # out_root = "/home/mengmengliu/datasets/Tests/0212/test_HQ_img/" # test SR results(SR imgs 
     # merge_root = "/home/mengmengliu/datasets/Tests/0212/test_cmp/" #  test SR results (cmp imgs)
 
     out_img_name = 'frames'
-    out_cmpimg_name = 'cmp_images_decross'
+    out_cmpimg_name = 'cmp_images'
     print(out_all_root)
     merge = CmpVideo(ori_root, out_all_root, out_img_name, out_cmpimg_name) ## generate_folders
-    merge.generate_merge_pic(flag='half')
+    merge.generate_merge_pic(flag='half', merge_num=2878)
     # merge.encode_cmp_video()
     # merge.encode_HQ_video()
 
