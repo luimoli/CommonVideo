@@ -5,6 +5,7 @@ import cv2
 
 from bash_cmd_video import merges_frame_video_ffmpeg
 from pathlib import Path
+from tqdm import tqdm
 
 class CmpVideo():
     def __init__(self, ori_root, out_all_root, out_img_name, out_cmpimg_name) -> None:
@@ -12,8 +13,6 @@ class CmpVideo():
         self.out_all_root = out_all_root
         self.out_root = os.path.join(os.path.dirname(self.out_all_root), out_img_name)
         self.merge_root = os.path.join(os.path.dirname(self.out_all_root), out_cmpimg_name)
-        # self.merge_video_root = os.path.join(os.path.dirname(self.merge_root), 'test_cmp_video')
-        # self.out_video_root = os.path.join(os.path.dirname(self.out_root), 'test_HQ_video')
         self.makedir()
 
     def makedir(self):
@@ -75,12 +74,15 @@ class CmpVideo():
         cmp2_path_list = glob(cmp2_folder + '/*')
         cmp1_path_list = sorted(cmp1_path_list)
         cmp2_path_list = sorted(cmp2_path_list)
-        assert len(cmp1_path_list) == len(cmp2_path_list)
+
+        # assert len(cmp1_path_list) == len(cmp2_path_list)  
+        # # TODO this assert is not needed when merge_num is less than list's length.
+
         if merge_num:
             loop_length = merge_num
         else:
             loop_length = len(cmp1_path_list)
-        for i in range(loop_length):
+        for i in tqdm(range(loop_length)):
             img1 = cv2.imread(cmp1_path_list[i])
             img2 = cv2.imread(cmp2_path_list[i])
             # img1_upscale = cv2.resize(img1, (img2.shape[1], img2.shape[0]), interpolation=cv2.INTER_CUBIC)
@@ -123,7 +125,7 @@ if __name__ == '__main__':
 
 
     ori_root = "/home/mengmengliu/code/AnimeSR-dev/inputs" # test videos'(imgs') root
-    out_all_root = "/home/mengmengliu/code/AnimeSR-dev/results/step3_gan_3LBOs_datasetV1_net_g_20000/"
+    out_all_root = "/home/mengmengliu/code/AnimeSR-dev/results/step3_gan_3LBOs_datasetV1_net_g_5000/"
     # out_all_root = "/dataset2/oldanime_smore/results/step3_gan_3LBOs_datasetV1_net_g_200000/"
 
     # out_root = "/home/mengmengliu/datasets/Tests/0212/test_HQ_img/" # test SR results(SR imgs 
